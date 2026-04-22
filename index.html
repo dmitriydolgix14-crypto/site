@@ -197,7 +197,6 @@
         <p class="message">Что-то здесь не так...</p>
         <p class="scary-text">Они наблюдают</p>
         <button class="button" id="escapeButton">Попробовать выйти</button>
-        <button class="button" id="testButton" style="margin-top: 10px; font-size: 0.8em; padding: 10px 20px;">Тест: Перейти на профиль</button>
     </div>
 
     <div class="final-message" id="finalMessage">
@@ -365,7 +364,7 @@
                     color: #ff0000;
                     font-size: 2em;
                     text-shadow: 0 0 20px #ff0000;
-                    z-index: 10000;
+ z-index: 10000;
                     text-align: center;
                     animation: glitch 0.3s infinite;
                 `;
@@ -381,15 +380,6 @@
                     window.location.href = profileUrl;
                 }, 2000);
             }, 500);
-        });
-
-        // Тестовая кнопка для немедленного перехода
-        const testButton = document.getElementById('testButton');
-        testButton.addEventListener('click', () => {
-            console.log('Тестовая кнопка нажата!');
-            const profileUrl = './profile.html';
-            console.log('Переход на:', profileUrl);
-            window.location.href = profileUrl;
         });
 
         // Блокировка Esc и Backspace
