@@ -172,13 +172,6 @@
     </style>
 </head>
 <body>
-    <div class="loading-screen" id="loadingScreen">
-        <div class="loading-text">Загрузка</div>
-        <div class="loading-bar">
-            <div class="loading-progress"></div>
-        </div>
-    </div>
-
     <div class="decoration"></div>
     <div class="decoration"></div>
 
@@ -194,20 +187,7 @@
     <script>
         // Переход на профиль
         document.getElementById('enterButton').addEventListener('click', function() {
-            const loadingScreen = document.getElementById('loadingScreen');
-            loadingScreen.classList.remove('hidden');
-            loadingScreen.querySelector('.loading-text').textContent = 'Загрузка';
-
-            setTimeout(() => {
-                window.location.href = 'profile.html';
-            }, 1500);
-        });
-
-        // Инициализация
-        document.addEventListener('DOMContentLoaded', () => {
-            setTimeout(() => {
-                document.getElementById('loadingScreen').classList.add('hidden');
-            }, 2000);
+            window.location.href = 'profile.html';
         });
 
         // Изменяем URL без перезагрузки

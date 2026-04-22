@@ -260,13 +260,6 @@
     </style>
 </head>
 <body>
-    <div class="loading-screen" id="loadingScreen">
-        <div class="loading-text">Загрузка</div>
-        <div class="loading-bar">
-            <div class="loading-progress"></div>
-        </div>
-    </div>
-
     <div class="decoration"></div>
     <div class="decoration"></div>
 
@@ -321,13 +314,6 @@
     </div>
 
     <script>
-        // Инициализация
-        document.addEventListener('DOMContentLoaded', () => {
-            setTimeout(() => {
-                document.getElementById('loadingScreen').classList.add('hidden');
-            }, 1500);
-        });
-
         // Изменяем URL без перезагрузки
         history.pushState({}, '', '/profile');
     </script>
