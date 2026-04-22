@@ -47,20 +47,46 @@
             font-weight: 300;
             letter-spacing: 8px;
             text-transform: uppercase;
+            color: #fff;
+            text-shadow: 0 0 10px #8b5cf6, 0 0 20px #8b5cf6, 0 0 30px #8b5cf6;
+            animation: neonPulse 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes neonPulse {
+            from {
+                text-shadow: 0 0 10px #8b5cf6, 0 0 20px #8b5cf6, 0 0 30px #8b5cf6;
+            }
+            to {
+                text-shadow: 0 0 20px #a78bfa, 0 0 30px #a78bfa, 0 0 40px #a78bfa;
+            }
         }
 
         .subtitle {
             font-size: 1.2em;
             margin-bottom: 50px;
-            opacity: 0.6;
+            opacity: 0.8;
             font-weight: 300;
             letter-spacing: 3px;
+            color: #e0e0e0;
+            animation: fadeInUp 1s ease 0.3s forwards;
+            opacity: 0;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 0.8;
+                transform: translateY(0);
+            }
         }
 
         .enter-button {
             background: transparent;
             color: #fff;
-            border: 2px solid #fff;
+            border: 2px solid #8b5cf6;
             padding: 18px 50px;
             font-size: 1.1em;
             cursor: pointer;
@@ -70,6 +96,9 @@
             text-transform: uppercase;
             position: relative;
             overflow: hidden;
+            box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
+            animation: fadeInUp 1s ease 0.6s forwards;
+            opacity: 0;
         }
 
         .enter-button::before {
@@ -79,17 +108,20 @@
             left: -100%;
             width: 100%;
             height: 100%;
-            background: #fff;
+            background: linear-gradient(90deg, transparent, rgba(139, 92, 246, 0.4), transparent);
             transition: left 0.4s ease;
             z-index: -1;
         }
 
         .enter-button:hover {
-            color: #000;
+            color: #fff;
+            border-color: #a78bfa;
+            box-shadow: 0 0 30px rgba(139, 92, 246, 0.6), 0 0 60px rgba(139, 92, 246, 0.3);
+            transform: translateY(-3px);
         }
 
         .enter-button:hover::before {
-            left: 0;
+            left: 100%;
         }
 
         .enter-button:active {
@@ -149,9 +181,10 @@
             position: fixed;
             width: 300px;
             height: 300px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(139, 92, 246, 0.1);
             border-radius: 50%;
             animation: rotate 20s linear infinite;
+            box-shadow: 0 0 50px rgba(139, 92, 246, 0.1);
         }
 
         .decoration:nth-child(1) {
@@ -163,15 +196,66 @@
             bottom: -150px;
             left: -150px;
             animation-direction: reverse;
+            width: 400px;
+            height: 400px;
+        }
+
+        .decoration:nth-child(3) {
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 600px;
+            height: 600px;
+            border: 1px solid rgba(139, 92, 246, 0.05);
+            animation: rotate 30s linear infinite reverse;
         }
 
         @keyframes rotate {
             from { transform: rotate(0deg); }
             to { transform: rotate(360deg); }
         }
+
+        /* Частицы */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(139, 92, 246, 0.6);
+            border-radius: 50%;
+            animation: float 15s infinite;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
     </style>
 </head>
 <body>
+    <div class="particles" id="particles"></div>
+    <div class="decoration"></div>
     <div class="decoration"></div>
     <div class="decoration"></div>
 
@@ -185,9 +269,31 @@
     </div>
 
     <script>
+        // Создание частиц
+        function createParticles() {
+            const container = document.getElementById('particles');
+            const particleCount = 50;
+
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 15 + 's';
+                particle.style.animationDuration = (10 + Math.random() * 10) + 's';
+                particle.style.width = (3 + Math.random() * 5) + 'px';
+                particle.style.height = particle.style.width;
+                container.appendChild(particle);
+            }
+        }
+
         // Переход на профиль
         document.getElementById('enterButton').addEventListener('click', function() {
             window.location.href = 'profile.html';
+        });
+
+        // Инициализация
+        document.addEventListener('DOMContentLoaded', () => {
+            createParticles();
         });
 
         // Изменяем URL без перезагрузки
