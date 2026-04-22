@@ -197,6 +197,7 @@
         <p class="message">Что-то здесь не так...</p>
         <p class="scary-text">Они наблюдают</p>
         <button class="button" id="escapeButton">Попробовать выйти</button>
+        <button class="button" id="testButton" style="margin-top: 10px; font-size: 0.8em; padding: 10px 20px;">Тест: Перейти на профиль</button>
     </div>
 
     <div class="final-message" id="finalMessage">
@@ -350,6 +351,7 @@
         // Кнопка "попробовать выйти"
         const escapeButton = document.getElementById('escapeButton');
         escapeButton.addEventListener('click', () => {
+            console.log('Кнопка нажата!');
             playScarySound();
             document.body.style.animation = 'shake 0.5s';
             setTimeout(() => {
@@ -371,10 +373,23 @@
                 document.body.appendChild(warning);
 
                 setTimeout(() => {
+                    console.log('Переход на profile.html');
                     warning.remove();
-                    window.location.href = 'profile.html';
+                    // Пробуем разные варианты путей
+                    const profileUrl = './profile.html';
+                    console.log('Пытаемся перейти на:', profileUrl);
+                    window.location.href = profileUrl;
                 }, 2000);
             }, 500);
+        });
+
+        // Тестовая кнопка для немедленного перехода
+        const testButton = document.getElementById('testButton');
+        testButton.addEventListener('click', () => {
+            console.log('Тестовая кнопка нажата!');
+            const profileUrl = './profile.html';
+            console.log('Переход на:', profileUrl);
+            window.location.href = profileUrl;
         });
 
         // Блокировка Esc и Backspace
