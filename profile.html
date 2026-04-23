@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@whitekrestik</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -13,106 +16,256 @@
 
         body {
             background: #000;
-            font-family: 'Helvetica Neue', Arial, sans-serif;
+            font-family: 'Inter', sans-serif;
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 20px;
             position: relative;
+            transition: opacity 0.4s ease;
+        }
+
+        /* Aurora background */
+        .aurora {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.6;
+        }
+
+        .blob:nth-child(1) {
+            width: 600px;
+            height: 600px;
+            background: linear-gradient(135deg, #8b5cf6, #a855f7);
+            top: -250px;
+            right: -250px;
+            animation: drift1 25s ease-in-out infinite;
+        }
+
+        .blob:nth-child(2) {
+            width: 500px;
+            height: 500px;
+            background: linear-gradient(135deg, #ec4899, #f472b6);
+            bottom: -200px;
+            left: -200px;
+            animation: drift2 30s ease-in-out infinite;
+        }
+
+        .blob:nth-child(3) {
+            width: 400px;
+            height: 400px;
+            background: linear-gradient(135deg, #06b6d4, #22d3ee);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation: drift3 22s ease-in-out infinite;
+        }
+
+        @keyframes drift1 {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(-60px, 60px) scale(1.1); }
+        }
+
+        @keyframes drift2 {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(40px, -40px) scale(1.15); }
+        }
+
+        @keyframes drift3 {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(1.2); }
+        }
+
+        /* Noise overlay */
+        .noise {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+            opacity: 0.03;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Vignette */
+        .vignette {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.4) 100%);
+            pointer-events: none;
+            z-index: 2;
         }
 
         .profile-card {
             position: relative;
-            z-index: 1;
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
+            z-index: 3;
+            background: rgba(20, 20, 20, 0.6);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
             padding: 60px 50px;
-            max-width: 500px;
+            max-width: 550px;
             width: 100%;
             text-align: center;
-            box-shadow: 0 0 100px rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            animation: fadeIn 1.5s ease;
+            box-shadow: 0 0 60px rgba(139, 92, 246, 0.3);
+            border: 2px solid transparent;
+            background-clip: padding-box;
+            animation: fadeInUp 1s ease;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
+        .profile-card::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.5), rgba(236, 72, 153, 0.5), rgba(6, 182, 212, 0.5));
+            border-radius: 24px;
+            z-index: -1;
+            filter: blur(10px);
+            opacity: 0.5;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85em;
+            color: #a0a0a0;
+            margin-bottom: 20px;
+            font-weight: 500;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #4ade80;
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
         }
 
         .avatar-container {
             position: relative;
-            width: 180px;
-            height: 180px;
+            width: 200px;
+            height: 200px;
             margin: 0 auto 40px;
         }
 
+        .avatar-ring {
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            border-radius: 50%;
+            background: conic-gradient(from 0deg, #8b5cf6, #ec4899, #06b6d4, #8b5cf6);
+            animation: rotate 4s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
         .avatar {
+            position: relative;
             width: 100%;
             height: 100%;
             border-radius: 50%;
             object-fit: cover;
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            filter: grayscale(100%);
+            border: 4px solid rgba(20, 20, 20, 0.8);
+            box-shadow: 0 0 30px rgba(139, 92, 246, 0.4);
             transition: all 0.3s ease;
         }
 
         .avatar:hover {
-            filter: grayscale(0%);
-            border-color: rgba(255, 255, 255, 0.4);
+            transform: scale(1.05);
+            box-shadow: 0 0 50px rgba(139, 92, 246, 0.6);
         }
 
-        .status-dot {
+        .avatar-status {
             position: absolute;
-            bottom: 10px;
-            right: 10px;
-            width: 20px;
-            height: 20px;
-            background: #fff;
+            bottom: 15px;
+            right: 15px;
+            width: 25px;
+            height: 25px;
+            background: #4ade80;
             border-radius: 50%;
-            border: 3px solid #000;
+            border: 4px solid #000;
+            box-shadow: 0 0 15px rgba(74, 222, 128, 0.5);
+            animation: pulse 2s ease-in-out infinite;
         }
 
         .username {
-            font-size: 2.5em;
-            margin-bottom: 15px;
-            font-weight: 300;
-            letter-spacing: 4px;
-            color: #fff;
-            text-shadow: 0 0 10px #8b5cf6, 0 0 20px #8b5cf6, 0 0 30px #8b5cf6;
-            animation: neonPulse 2s ease-in-out infinite alternate;
-        }
-
-        @keyframes neonPulse {
-            from {
-                text-shadow: 0 0 10px #8b5cf6, 0 0 20px #8b5cf6, 0 0 30px #8b5cf6;
-            }
-            to {
-                text-shadow: 0 0 20px #a78bfa, 0 0 30px #a78bfa, 0 0 40px #a78bfa;
-            }
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2.8em;
+            margin-bottom: 20px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            background: linear-gradient(135deg, #8b5cf6, #ec4899, #06b6d4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .bio {
-            font-size: 1.1em;
+            font-size: 1.3em;
             margin-bottom: 50px;
             line-height: 1.8;
-            opacity: 0.9;
-            font-weight: 300;
             color: #e0e0e0;
+            font-weight: 300;
         }
 
-        .bio span {
-            color: #fff;
-            font-weight: 400;
-            padding: 4px 12px;
+        .tag {
             background: rgba(139, 92, 246, 0.2);
-            border-radius: 20px;
-            border: 1px solid rgba(139, 92, 246, 0.3);
-            text-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
+            padding: 8px 20px;
+            border-radius: 25px;
+            border: 2px solid #8b5cf6;
             display: inline-block;
-            margin: 0 4px;
+            margin: 0 6px;
+            font-weight: 500;
+            color: #fff;
+            transition: all 0.3s ease;
+        }
+
+        .tag:hover {
+            background: rgba(139, 92, 246, 0.3);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(139, 92, 246, 0.3);
         }
 
         .stats {
@@ -127,219 +280,119 @@
         }
 
         .stat-number {
-            font-size: 2em;
-            font-weight: 300;
-            margin-bottom: 5px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2.5em;
+            font-weight: 700;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #8b5cf6, #ec4899);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .stat-label {
-            font-size: 0.8em;
-            opacity: 0.5;
+            font-size: 0.9em;
+            color: #aaa;
             text-transform: uppercase;
             letter-spacing: 2px;
+            font-weight: 500;
         }
 
         .social-links {
             display: flex;
             justify-content: center;
-            gap: 20px;
+            gap: 25px;
             margin-bottom: 40px;
         }
 
         .social-link {
-            width: 50px;
-            height: 50px;
+            width: 60px;
+            height: 60px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             text-decoration: none;
             transition: all 0.3s ease;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 2px solid #8b5cf6;
             color: #fff;
+            background: rgba(139, 92, 246, 0.1);
+            position: relative;
+        }
+
+        .social-link::after {
+            content: attr(aria-label);
+            position: absolute;
+            bottom: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.75em;
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        .social-link:hover::after {
+            opacity: 1;
         }
 
         .social-link:hover {
-            background: #fff;
-            color: #000;
-            transform: translateY(-5px);
+            transform: translateY(-8px) scale(1.1);
+            background: rgba(139, 92, 246, 0.3);
+            box-shadow: 0 15px 40px rgba(139, 92, 246, 0.4);
         }
 
         .back-button {
-            padding: 15px 40px;
-            background: transparent;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            color: #fff;
+            padding: 18px 50px;
+            background: linear-gradient(135deg, #8b5cf6, #a855f7);
+            border: none;
+            color: white;
+            border-radius: 10px;
             cursor: pointer;
-            font-size: 1em;
-            transition: all 0.4s ease;
-            font-weight: 300;
-            letter-spacing: 3px;
+            font-size: 1.1em;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            letter-spacing: 2px;
             text-transform: uppercase;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .back-button::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: #fff;
-            transition: left 0.4s ease;
-            z-index: -1;
+            box-shadow: 0 0 30px rgba(139, 92, 246, 0.4);
         }
 
         .back-button:hover {
-            color: #000;
-            border-color: #fff;
-        }
-
-        .back-button:hover::before {
-            left: 0;
-        }
-
-        /* Загрузочный экран */
-        .loading-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            flex-direction: column;
-            transition: opacity 0.8s ease;
-        }
-
-        .loading-screen.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        .loading-text {
-            font-size: 1.5em;
-            color: #fff;
-            margin-bottom: 40px;
-            letter-spacing: 8px;
-            text-transform: uppercase;
-            font-weight: 300;
-        }
-
-        .loading-bar {
-            width: 200px;
-            height: 2px;
-            background: rgba(255, 255, 255, 0.1);
-            position: relative;
-        }
-
-        .loading-progress {
-            height: 100%;
-            background: #fff;
-            animation: loadingProgress 2s ease forwards;
-            width: 0%;
-        }
-
-        @keyframes loadingProgress {
-            to { width: 100%; }
-        }
-
-        /* Декоративные элементы */
-        .decoration {
-            position: fixed;
-            width: 400px;
-            height: 400px;
-            border: 1px solid rgba(139, 92, 246, 0.1);
-            border-radius: 50%;
-            animation: rotate 30s linear infinite;
-            box-shadow: 0 0 50px rgba(139, 92, 246, 0.1);
-        }
-
-        .decoration:nth-child(1) {
-            top: -200px;
-            right: -200px;
-        }
-
-        .decoration:nth-child(2) {
-            bottom: -200px;
-            left: -200px;
-            animation-direction: reverse;
-        }
-
-        .decoration:nth-child(3) {
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 600px;
-            height: 600px;
-            border: 1px solid rgba(139, 92, 246, 0.05);
-            animation: rotate 40s linear infinite reverse;
-        }
-
-        @keyframes rotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        /* Частицы */
-        .particles {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        .particle {
-            position: absolute;
-            width: 4px;
-            height: 4px;
-            background: rgba(139, 92, 246, 0.6);
-            border-radius: 50%;
-            animation: float 20s infinite;
-        }
-
-        @keyframes float {
-            0%, 100% {
-                transform: translateY(100vh) rotate(0deg);
-                opacity: 0;
-            }
-            10% {
-                opacity: 1;
-            }
-            90% {
-                opacity: 1;
-            }
-            100% {
-                transform: translateY(-100vh) rotate(720deg);
-                opacity: 0;
-            }
+            transform: translateY(-3px);
+            box-shadow: 0 0 50px rgba(139, 92, 246, 0.6);
         }
     </style>
 </head>
 <body>
-    <div class="particles" id="particles"></div>
-    <div class="decoration"></div>
-    <div class="decoration"></div>
-    <div class="decoration"></div>
+    <div class="aurora">
+        <div class="blob"></div>
+        <div class="blob"></div>
+        <div class="blob"></div>
+    </div>
+    <div class="noise"></div>
+    <div class="vignette"></div>
 
     <div class="profile-card">
+        <div class="eyebrow">
+            <span class="status-dot"></span>
+            <span>online · @whitekrestik</span>
+        </div>
+
         <div class="avatar-container">
+            <div class="avatar-ring"></div>
             <img src="avatar.jpg" alt="Avatar" class="avatar" id="profileImage">
-            <div class="status-dot"></div>
+            <div class="avatar-status"></div>
         </div>
 
         <h1 class="username">@whitekrestik</h1>
 
         <p class="bio">
-            я <span>крутой гуль</span>, <span>вайбкодер</span> и <span>дотер</span>
+            я <span class="tag">крутой гуль</span>, <span class="tag">вайбкодер</span> и <span class="tag">дотер</span>
         </p>
 
         <div class="stats">
@@ -358,52 +411,42 @@
         </div>
 
         <div class="social-links">
-            <a href="https://t.me/whitekrestik" class="social-link" target="_blank" title="Telegram">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <a href="https://t.me/whitekrestik" class="social-link" target="_blank" aria-label="telegram">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.161c-.18 1.897-.962 6.502-1.359 8.627-.168.9-.5 1.201-.82 1.23-.697.064-1.226-.461-1.901-.903-1.056-.692-1.653-1.123-2.678-1.799-1.185-.781-.417-1.21.258-1.911.177-.184 3.247-2.977 3.307-3.23.007-.032.015-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.139-5.062 3.345-.479.329-.913.489-1.302.481-.428-.009-1.252-.242-1.865-.442-.752-.244-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.831-2.529 6.998-3.015 3.333-1.386 4.025-1.627 4.477-1.635.099-.002.321.023.465.141.121.099.154.232.169.326.015.093.034.306.019.471z"/>
                 </svg>
             </a>
 
-            <a href="https://discord.gg/whitekrestik" class="social-link" target="_blank" title="Discord">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <a href="https://discord.gg/whitekrestik" class="social-link" target="_blank" aria-label="discord">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/>
                 </svg>
             </a>
 
-            <a href="https://soundcloud.com/whitekrestik" class="social-link" target="_blank" title="SoundCloud">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <a href="https://soundcloud.com/whitekrestik" class="social-link" target="_blank" aria-label="soundcloud">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M1.175 12.225c-.051 0-.094.046-.101.1l-.233 2.154.233 2.105c.007.058.05.098.101.098.05 0 .09-.04.099-.098l.255-2.105-.27-2.154c-.009-.06-.052-.1-.084-.1zm-.899.828c-.06 0-.091.037-.104.094L0 14.479l.165 1.308c.014.057.045.094.09.094s.089-.037.099-.094l.19-1.308-.19-1.334c-.01-.057-.054-.094-.078-.094zm1.83-1.229c-.061 0-.12.045-.12.104l-.21 2.563.225 2.458c0 .06.045.104.106.104.061 0 .12-.044.12-.104l.24-2.458-.24-2.563c0-.06-.059-.104-.12-.104zm.945-.089c-.075 0-.135.06-.15.135l-.193 2.64.21 2.544c.016.077.075.138.149.138.075 0 .135-.061.15-.138l.24-2.544-.24-2.64c-.015-.075-.06-.135-.166-.135zm.961-.651c-.09 0-.149.074-.164.164l-.217 2.795.232 2.52c.015.09.074.164.164.164.075 0 .149-.074.164-.164l.249-2.52-.249-2.795c-.015-.09-.089-.164-.18-.164zm.96-.945c-.104 0-.179.09-.194.194l-.217 2.856.232 2.52c.015.104.09.194.194.194.09 0 .179-.09.179-.194l.249-2.52-.249-2.856c0-.104-.089-.194-.194-.194zm.96-.629c-.12 0-.209.104-.224.224l-.202 2.856.217 2.52c.015.12.104.224.224.224.12 0 .209-.104.224-.224l.249-2.52-.249-2.856c-.015-.12-.104-.224-.239-.224zm.99-.354c-.135 0-.239.12-.254.254l-.194 2.856.209 2.52c.015.135.119.254.254.254.119 0 .239-.119.254-.254l.249-2.52-.249-2.856c-.015-.134-.135-.254-.269-.254zm1.005-.104c-.149 0-.269.134-.284.284l-.179 2.96.194 2.52c.015.149.135.284.284.284.149 0 .269-.135.284-.284l.249-2.52-.249-2.96c-.015-.15-.135-.284-.299-.284zm1.02-.045c-.164 0-.299.149-.314.314l-.164 3.005.179 2.52c.015.164.15.314.314.314.164 0 .299-.15.314-.314l.249-2.52-.249-3.005c-.015-.165-.15-.314-.329-.314zm1.02-.015c-.179 0-.314.164-.329.344l-.149 3.02.164 2.52c.015.179.15.344.329.344.179 0 .314-.165.329-.344l.249-2.52-.249-3.02c-.015-.18-.15-.344-.344-.344zm1.035-.015c-.194 0-.344.179-.359.374l-.135 3.035.149 2.52c.015.194.165.374.359.374.194 0 .344-.18.359-.374l.249-2.52-.249-3.035c-.015-.195-.165-.374-.373-.374zm1.035-.015c-.209 0-.359.194-.374.404l-.119 3.05.134 2.52c.015.209.165.404.374.404.209 0 .359-.195.374-.404l.249-2.52-.249-3.05c-.015-.21-.165-.404-.389-.404zm1.035-.015c-.224 0-.389.209-.404.434l-.105 3.065.12 2.52c.015.224.18.434.404.434.224 0 .389-.21.404-.434l.249-2.52-.249-3.065c-.015-.225-.18-.434-.419-.434zm1.05-.015c-.239 0-.419.224-.434.464l-.09 3.08.105 2.52c.015.239.195.464.434.464.239 0 .419-.225.434-.464l.249-2.52-.249-3.08c-.015-.24-.195-.464-.449-.464zm1.05-.015c-.254 0-.449.239-.464.494l-.075 3.095.09 2.52c.015.254.21.494.464.494.254 0 .449-.24.464-.494l.249-2.52-.249-3.095c-.015-.255-.21-.494-.479-.494zm1.05 0c-.269 0-.479.254-.494.524l-.06 3.11.075 2.52c.015.269.225.524.494.524.269 0 .479-.255.494-.524l.249-2.52-.249-3.11c-.015-.27-.225-.524-.509-.524zm1.05.015c-.284 0-.509.269-.524.554l-.045 3.125.06 2.52c.015.284.24.554.524.554.284 0 .509-.27.524-.554l.249-2.52-.249-3.125c-.015-.285-.24-.554-.539-.554zm1.05.045c-.299 0-.539.284-.554.584l-.03 3.125.045 2.52c.015.299.255.584.554.584.299 0 .539-.285.554-.584l.249-2.52-.249-3.125c-.015-.3-.255-.584-.569-.584zm1.065.09c-.314 0-.569.299-.584.614l-.015 3.11.03 2.52c.015.314.27.614.584.614.314 0 .569-.3.584-.614l.249-2.52-.249-3.11c-.015-.315-.27-.614-.599-.614zm1.065.135c-.329 0-.599.314-.614.644l-.015 3.065.015 2.52c.015.329.285.644.614.644.329 0 .599-.315.614-.644l.249-2.52-.249-3.065c-.015-.33-.285-.644-.614-.644z"/>
+                </svg>
+            </a>
+
+            <a href="https://github.com/whitekrestik" class="social-link" target="_blank" aria-label="github">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
                 </svg>
             </a>
         </div>
 
-        <button class="back-button" onclick="window.location.href='index.html'">← Назад</button>
+        <button class="back-button" id="backButton">← Назад</button>
     </div>
 
     <script>
-        // Создание частиц
-        function createParticles() {
-            const container = document.getElementById('particles');
-            const particleCount = 40;
-
-            for (let i = 0; i < particleCount; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'particle';
-                particle.style.left = Math.random() * 100 + '%';
-                particle.style.animationDelay = Math.random() * 20 + 's';
-                particle.style.animationDuration = (15 + Math.random() * 10) + 's';
-                particle.style.width = (3 + Math.random() * 4) + 'px';
-                particle.style.height = particle.style.width;
-                container.appendChild(particle);
-            }
-        }
-
-        // Инициализация
-        document.addEventListener('DOMContentLoaded', () => {
-            createParticles();
+        document.getElementById('backButton').addEventListener('click', function() {
+            document.body.style.opacity = '0';
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 400);
         });
 
-        // Изменяем URL без перезагрузки
         history.pushState({}, '', '/profile');
     </script>
 </body>
