@@ -373,10 +373,35 @@
     <div class="hint">scroll · click · <span class="blood">don't look back</span></div>
 
     <script>
-        document.getElementById('enterButton').addEventListener('click', () => {
-            document.body.style.transition = 'opacity .35s ease';
-            document.body.style.opacity = '0';
-            setTimeout(() => { window.location.href = 'profile.html'; }, 340);
+        document.getElementById('enterButton').addEventListener('click', async () => {
+            const fadeAndGo = (url) => {
+                document.body.style.transition = 'opacity .35s ease';
+                document.body.style.opacity = '0';
+                setTimeout(() => { window.location.href = url; }, 340);
+            };
+
+            const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+            if (!token) {
+                fadeAndGo('/login');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/auth?action=me', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (response.ok) {
+                    fadeAndGo('/profile');
+                } else {
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                    sessionStorage.removeItem('token');
+                    sessionStorage.removeItem('user');
+                    fadeAndGo('/login');
+                }
+            } catch (error) {
+                fadeAndGo('/login');
+            }
         });
 
         // live timer in HUD
