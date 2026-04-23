@@ -389,11 +389,6 @@
     <div class="vignette" aria-hidden="true"></div>
     <div class="particles" id="particles" aria-hidden="true"></div>
 
-    <div class="loading-screen" id="loadingScreen">
-        <div class="loading-text">loading</div>
-        <div class="loading-bar"><div class="loading-progress"></div></div>
-    </div>
-
     <main class="container">
         <div class="eyebrow"><span class="dot"></span>online · @whitekrestik</div>
         <h1>добро пожаловать</h1>
@@ -424,21 +419,13 @@
             }
         }
 
-        function hideLoader() {
-            const ls = document.getElementById('loadingScreen');
-            if (ls) ls.classList.add('hidden');
-        }
-
         document.getElementById('enterButton').addEventListener('click', () => {
             document.body.style.transition = 'opacity .4s ease';
             document.body.style.opacity = '0';
             setTimeout(() => { window.location.href = 'profile.html'; }, 380);
         });
 
-        document.addEventListener('DOMContentLoaded', () => {
-            createParticles();
-            setTimeout(hideLoader, 1200);
-        });
+        document.addEventListener('DOMContentLoaded', createParticles);
 
         history.pushState({}, '', '/');
     </script>
