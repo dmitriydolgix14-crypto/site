@@ -3,408 +3,535 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@whitekrestik</title>
+    <title>@whitekrestik · nefor</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Unbounded:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg:        #050308;
+            --bg-card:   #0a0710;
+            --ink:       #f3f0f7;
+            --ink-muted: rgba(243, 240, 247, 0.58);
+            --ink-dim:   rgba(243, 240, 247, 0.35);
+            --blood:     #ef4444;
+            --blood-hi:  #f87171;
+            --blood-low: #7f1d1d;
+            --violet:    #8b5cf6;
+            --line:      rgba(255, 255, 255, 0.07);
         }
 
+        html, body { height: 100%; }
+
         body {
-            background: #000;
-            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background: var(--bg);
+            color: var(--ink);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px;
+            padding: 24px;
             position: relative;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
         }
 
+        /* --- dark atmospheric background --- */
+        .aurora { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.45;
+            mix-blend-mode: screen;
+            will-change: transform;
+        }
+        .blob.b1 {
+            width: 520px; height: 520px;
+            background: radial-gradient(circle at 40% 40%, #7f1d1d, transparent 65%);
+            top: -180px; right: -120px;
+            animation: drift1 28s ease-in-out infinite alternate;
+        }
+        .blob.b2 {
+            width: 600px; height: 600px;
+            background: radial-gradient(circle at 50% 40%, #581c87, transparent 65%);
+            bottom: -220px; left: -160px;
+            animation: drift2 32s ease-in-out infinite alternate;
+        }
+        .blob.b3 {
+            width: 420px; height: 420px;
+            background: radial-gradient(circle at 50% 50%, #1e1b4b, transparent 60%);
+            top: 55%; left: 45%;
+            transform: translate(-50%, -50%);
+            opacity: 0.4;
+            animation: drift3 40s ease-in-out infinite alternate;
+        }
+        @keyframes drift1 { to { transform: translate(-60px, 50px) scale(1.1); } }
+        @keyframes drift2 { to { transform: translate(60px, -40px) scale(1.05); } }
+        @keyframes drift3 { to { transform: translate(-45%, -55%) scale(1.15); } }
+
+        /* heavy film grain */
+        .grain {
+            position: fixed; inset: 0; z-index: 1; pointer-events: none; opacity: 0.12; mix-blend-mode: overlay;
+            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+            animation: grainShift 1.2s steps(6) infinite;
+        }
+        @keyframes grainShift {
+            0%   { transform: translate(0,0); }
+            20%  { transform: translate(-2%, 1%); }
+            40%  { transform: translate(1%, -2%); }
+            60%  { transform: translate(-1%, 2%); }
+            80%  { transform: translate(2%, -1%); }
+            100% { transform: translate(0,0); }
+        }
+
+        .vignette {
+            position: fixed; inset: 0; z-index: 1; pointer-events: none;
+            background: radial-gradient(ellipse at center, transparent 35%, rgba(0,0,0,0.75) 100%);
+        }
+
+        /* scanlines */
+        .scanlines {
+            position: fixed; inset: 0; z-index: 1; pointer-events: none; opacity: 0.18;
+            background-image: repeating-linear-gradient(
+                to bottom,
+                transparent 0,
+                transparent 2px,
+                rgba(0,0,0,0.4) 2px,
+                rgba(0,0,0,0.4) 3px
+            );
+            mix-blend-mode: multiply;
+        }
+
+        /* --- card --- */
         .profile-card {
             position: relative;
-            z-index: 1;
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 60px 50px;
-            max-width: 500px;
+            z-index: 3;
             width: 100%;
-            text-align: center;
-            box-shadow: 0 0 100px rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            animation: fadeIn 1.5s ease;
+            max-width: 460px;
+            border-radius: 20px;
+            overflow: hidden;
+            background: var(--bg-card);
+            border: 1px solid var(--line);
+            box-shadow:
+                0 40px 80px -20px rgba(0,0,0,0.7),
+                0 0 0 1px rgba(239,68,68,0.12) inset,
+                0 0 80px -20px rgba(239,68,68,0.2);
+            animation: rise 0.9s cubic-bezier(.2,.8,.2,1) both;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
+        /* subtle red edge glow */
+        .profile-card::before {
+            content: '';
+            position: absolute;
+            inset: -1px;
+            border-radius: 20px;
+            padding: 1px;
+            background: linear-gradient(145deg, rgba(239,68,68,0.55), rgba(139,92,246,0.25) 50%, rgba(239,68,68,0.15));
+            -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+            -webkit-mask-composite: xor;
+                    mask-composite: exclude;
+            opacity: 0.7;
+            pointer-events: none;
         }
 
-        .avatar-container {
+        @keyframes rise { from {opacity:0; transform:translateY(24px);} to {opacity:1; transform:translateY(0);} }
+
+        /* hero image */
+        .hero {
             position: relative;
-            width: 180px;
-            height: 180px;
-            margin: 0 auto 40px;
+            width: 100%;
+            aspect-ratio: 4 / 5;
+            overflow: hidden;
+            background: #000;
         }
 
-        .avatar {
+        .hero-img {
+            position: absolute;
+            inset: 0;
             width: 100%;
             height: 100%;
-            border-radius: 50%;
             object-fit: cover;
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            filter: grayscale(100%);
-            transition: all 0.3s ease;
+            filter: grayscale(100%) contrast(1.12) brightness(0.82);
+            transition: transform 1.2s ease, filter .6s ease;
         }
 
-        .avatar:hover {
-            filter: grayscale(0%);
-            border-color: rgba(255, 255, 255, 0.4);
+        .profile-card:hover .hero-img {
+            transform: scale(1.03);
+            filter: grayscale(85%) contrast(1.18) brightness(0.88);
         }
 
-        .status-dot {
+        .hero-overlay {
             position: absolute;
-            bottom: 10px;
-            right: 10px;
-            width: 20px;
-            height: 20px;
-            background: #fff;
+            inset: 0;
+            background:
+                linear-gradient(180deg,
+                    rgba(5,3,8,0.15) 0%,
+                    rgba(5,3,8,0.05) 35%,
+                    rgba(5,3,8,0.55) 70%,
+                    rgba(5,3,8,0.98) 100%),
+                linear-gradient(180deg, rgba(239,68,68,0.0) 50%, rgba(239,68,68,0.08) 100%);
+        }
+
+        /* crosshair corners on the hero */
+        .corner {
+            position: absolute;
+            width: 18px; height: 18px;
+            border: 1.5px solid rgba(239,68,68,0.9);
+            opacity: 0.85;
+        }
+        .corner.tl { top: 14px; left: 14px; border-right: 0; border-bottom: 0; }
+        .corner.tr { top: 14px; right: 14px; border-left: 0; border-bottom: 0; }
+        .corner.bl { bottom: 14px; left: 14px; border-right: 0; border-top: 0; }
+        .corner.br { bottom: 14px; right: 14px; border-left: 0; border-top: 0; }
+
+        /* red tape chip */
+        .tape {
+            position: absolute;
+            top: 18px;
+            left: 50%;
+            transform: translateX(-50%) rotate(-1.5deg);
+            padding: 5px 14px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: #fff;
+            background: var(--blood);
+            border-radius: 2px;
+            box-shadow: 0 6px 18px -6px rgba(239,68,68,0.6);
+        }
+        .tape::before, .tape::after {
+            content: '';
+            position: absolute;
+            top: 50%; transform: translateY(-50%);
+            width: 4px; height: 4px;
+            background: rgba(0,0,0,0.35);
             border-radius: 50%;
-            border: 3px solid #000;
+        }
+        .tape::before { left: 5px; }
+        .tape::after  { right: 5px; }
+
+        .hero-content {
+            position: absolute;
+            left: 0; right: 0; bottom: 0;
+            padding: 24px 28px 22px;
+            z-index: 2;
         }
 
         .username {
-            font-size: 2.5em;
-            margin-bottom: 15px;
-            font-weight: 300;
-            letter-spacing: 4px;
+            font-family: 'Unbounded', 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: clamp(1.7rem, 5.2vw, 2.1rem);
+            letter-spacing: -0.02em;
+            line-height: 1;
             color: #fff;
-            text-shadow: 0 0 10px #8b5cf6, 0 0 20px #8b5cf6, 0 0 30px #8b5cf6;
-            animation: neonPulse 2s ease-in-out infinite alternate;
+            text-shadow:
+                0 2px 10px rgba(0,0,0,0.8),
+                1px 0 0 rgba(239,68,68,0.8),
+                -1px 0 0 rgba(139,92,246,0.6);
+            margin-bottom: 8px;
         }
 
-        @keyframes neonPulse {
-            from {
-                text-shadow: 0 0 10px #8b5cf6, 0 0 20px #8b5cf6, 0 0 30px #8b5cf6;
-            }
-            to {
-                text-shadow: 0 0 20px #a78bfa, 0 0 30px #a78bfa, 0 0 40px #a78bfa;
-            }
+        .meta-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
+            color: var(--ink-muted);
+        }
+
+        .meta-row .dot {
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: var(--blood);
+            box-shadow: 0 0 10px var(--blood);
+            animation: pulseDot 1.4s ease-in-out infinite;
+        }
+
+        .meta-row .sep { opacity: 0.3; }
+
+        @keyframes pulseDot {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50%      { opacity: 0.4; transform: scale(0.7); }
+        }
+
+        /* body of the card */
+        .body {
+            padding: 26px 26px 22px;
+            position: relative;
+        }
+
+        /* watermark number like an archive entry */
+        .archive-id {
+            position: absolute;
+            top: 14px;
+            right: 22px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            letter-spacing: 2px;
+            color: var(--ink-dim);
         }
 
         .bio {
-            font-size: 1.1em;
-            margin-bottom: 50px;
-            line-height: 1.8;
-            opacity: 0.9;
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: var(--ink-muted);
             font-weight: 300;
-            color: #e0e0e0;
-        }
-
-        .bio span {
-            color: #fff;
-            font-weight: 400;
-            padding: 4px 12px;
-            background: rgba(139, 92, 246, 0.2);
-            border-radius: 20px;
-            border: 1px solid rgba(139, 92, 246, 0.3);
-            text-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
-            display: inline-block;
-            margin: 0 4px;
-        }
-
-        .stats {
-            display: flex;
-            justify-content: center;
-            gap: 40px;
-            margin-bottom: 50px;
-        }
-
-        .stat-item {
+            margin: 12px 0 24px;
             text-align: center;
         }
 
+        .bio .tag {
+            display: inline-block;
+            margin: 2px;
+            padding: 4px 10px;
+            color: #fff;
+            font-weight: 500;
+            font-size: 0.88rem;
+            background: linear-gradient(180deg, rgba(239,68,68,0.18), rgba(127,29,29,0.1));
+            border: 1px solid rgba(239,68,68,0.35);
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', monospace;
+            letter-spacing: 1px;
+            transition: transform .2s ease, border-color .2s ease, background .2s ease;
+        }
+        .bio .tag:hover {
+            transform: translateY(-2px);
+            border-color: var(--blood);
+            background: linear-gradient(180deg, rgba(239,68,68,0.3), rgba(127,29,29,0.18));
+        }
+
+        /* stats */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0;
+            margin: 0 -4px 22px;
+            border-top: 1px solid var(--line);
+            border-bottom: 1px solid var(--line);
+        }
+        .stat-item {
+            padding: 14px 6px;
+            text-align: center;
+            position: relative;
+        }
+        .stat-item + .stat-item::before {
+            content: '';
+            position: absolute;
+            left: 0; top: 20%; bottom: 20%;
+            width: 1px;
+            background: var(--line);
+        }
         .stat-number {
-            font-size: 2em;
-            font-weight: 300;
-            margin-bottom: 5px;
+            font-family: 'Unbounded', sans-serif;
+            font-weight: 600;
+            font-size: 1.3rem;
+            letter-spacing: -0.01em;
+            color: #fff;
+            margin-bottom: 2px;
         }
-
         .stat-label {
-            font-size: 0.8em;
-            opacity: 0.5;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            color: var(--ink-dim);
             text-transform: uppercase;
-            letter-spacing: 2px;
+            letter-spacing: 2.5px;
         }
 
+        /* social */
         .social-links {
             display: flex;
             justify-content: center;
-            gap: 20px;
-            margin-bottom: 40px;
+            gap: 10px;
+            margin-bottom: 22px;
         }
-
         .social-link {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
+            position: relative;
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
             text-decoration: none;
-            transition: all 0.3s ease;
-            border: 1px solid rgba(255, 255, 255, 0.2);
             color: #fff;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--line);
+            transition: transform .2s ease, background .25s ease, border-color .25s ease, box-shadow .25s ease;
         }
-
         .social-link:hover {
-            background: #fff;
-            color: #000;
-            transform: translateY(-5px);
+            transform: translateY(-3px);
+            background: linear-gradient(180deg, rgba(239,68,68,0.22), rgba(127,29,29,0.18));
+            border-color: rgba(239,68,68,0.55);
+            box-shadow: 0 10px 24px -10px rgba(239,68,68,0.6);
         }
-
-        .back-button {
-            padding: 15px 40px;
-            background: transparent;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            color: #fff;
-            cursor: pointer;
-            font-size: 1em;
-            transition: all 0.4s ease;
-            font-weight: 300;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .back-button::before {
-            content: '';
+        .social-link svg { width: 17px; height: 17px; }
+        .social-link::after {
+            content: attr(data-label);
             position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: #fff;
-            transition: left 0.4s ease;
-            z-index: -1;
-        }
-
-        .back-button:hover {
-            color: #000;
-            border-color: #fff;
-        }
-
-        .back-button:hover::before {
-            left: 0;
-        }
-
-        /* Загрузочный экран */
-        .loading-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            flex-direction: column;
-            transition: opacity 0.8s ease;
-        }
-
-        .loading-screen.hidden {
+            bottom: calc(100% + 6px);
+            left: 50%;
+            transform: translateX(-50%) translateY(3px);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--ink-muted);
+            background: rgba(10,7,16,0.95);
+            border: 1px solid var(--line);
+            border-radius: 4px;
+            padding: 4px 8px;
+            white-space: nowrap;
             opacity: 0;
             pointer-events: none;
+            transition: opacity .2s ease, transform .2s ease;
+        }
+        .social-link:hover::after {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
         }
 
-        .loading-text {
-            font-size: 1.5em;
-            color: #fff;
-            margin-bottom: 40px;
-            letter-spacing: 8px;
+        /* back button */
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 11px 22px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            font-weight: 500;
+            letter-spacing: 3px;
             text-transform: uppercase;
-            font-weight: 300;
+            color: var(--ink);
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: transform .2s ease, background .25s ease, border-color .25s ease;
+        }
+        .back-button:hover {
+            transform: translateY(-2px);
+            background: rgba(239,68,68,0.1);
+            border-color: rgba(239,68,68,0.5);
+        }
+        .back-button .arrow { transition: transform .2s ease; }
+        .back-button:hover .arrow { transform: translateX(-3px); }
+
+        .actions {
+            display: flex;
+            justify-content: center;
         }
 
-        .loading-bar {
-            width: 200px;
-            height: 2px;
-            background: rgba(255, 255, 255, 0.1);
-            position: relative;
+        @media (max-width: 520px) {
+            .profile-card { max-width: 100%; }
+            .hero { aspect-ratio: 3 / 4; }
+            .body { padding: 22px 20px 20px; }
         }
 
-        .loading-progress {
-            height: 100%;
-            background: #fff;
-            animation: loadingProgress 2s ease forwards;
-            width: 0%;
-        }
-
-        @keyframes loadingProgress {
-            to { width: 100%; }
-        }
-
-        /* Декоративные элементы */
-        .decoration {
-            position: fixed;
-            width: 400px;
-            height: 400px;
-            border: 1px solid rgba(139, 92, 246, 0.1);
-            border-radius: 50%;
-            animation: rotate 30s linear infinite;
-            box-shadow: 0 0 50px rgba(139, 92, 246, 0.1);
-        }
-
-        .decoration:nth-child(1) {
-            top: -200px;
-            right: -200px;
-        }
-
-        .decoration:nth-child(2) {
-            bottom: -200px;
-            left: -200px;
-            animation-direction: reverse;
-        }
-
-        .decoration:nth-child(3) {
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 600px;
-            height: 600px;
-            border: 1px solid rgba(139, 92, 246, 0.05);
-            animation: rotate 40s linear infinite reverse;
-        }
-
-        @keyframes rotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        /* Частицы */
-        .particles {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        .particle {
-            position: absolute;
-            width: 4px;
-            height: 4px;
-            background: rgba(139, 92, 246, 0.6);
-            border-radius: 50%;
-            animation: float 20s infinite;
-        }
-
-        @keyframes float {
-            0%, 100% {
-                transform: translateY(100vh) rotate(0deg);
-                opacity: 0;
-            }
-            10% {
-                opacity: 1;
-            }
-            90% {
-                opacity: 1;
-            }
-            100% {
-                transform: translateY(-100vh) rotate(720deg);
-                opacity: 0;
-            }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation: none !important; transition: none !important; }
         }
     </style>
 </head>
 <body>
-    <div class="particles" id="particles"></div>
-    <div class="decoration"></div>
-    <div class="decoration"></div>
-    <div class="decoration"></div>
-
-    <div class="profile-card">
-        <div class="avatar-container">
-            <img src="avatar.jpg" alt="Avatar" class="avatar" id="profileImage">
-            <div class="status-dot"></div>
-        </div>
-
-        <h1 class="username">@whitekrestik</h1>
-
-        <p class="bio">
-            я <span>крутой гуль</span>, <span>вайбкодер</span> и <span>дотер</span>
-        </p>
-
-        <div class="stats">
-            <div class="stat-item">
-                <div class="stat-number">∞</div>
-                <div class="stat-label">вайб</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-number">24/7</div>
-                <div class="stat-label">онлайн</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-number">100%</div>
-                <div class="stat-label">стиль</div>
-            </div>
-        </div>
-
-        <div class="social-links">
-            <a href="https://t.me/whitekrestik" class="social-link" target="_blank" title="Telegram">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.161c-.18 1.897-.962 6.502-1.359 8.627-.168.9-.5 1.201-.82 1.23-.697.064-1.226-.461-1.901-.903-1.056-.692-1.653-1.123-2.678-1.799-1.185-.781-.417-1.21.258-1.911.177-.184 3.247-2.977 3.307-3.23.007-.032.015-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.139-5.062 3.345-.479.329-.913.489-1.302.481-.428-.009-1.252-.242-1.865-.442-.752-.244-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.831-2.529 6.998-3.015 3.333-1.386 4.025-1.627 4.477-1.635.099-.002.321.023.465.141.121.099.154.232.169.326.015.093.034.306.019.471z"/>
-                </svg>
-            </a>
-
-            <a href="https://discord.gg/whitekrestik" class="social-link" target="_blank" title="Discord">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/>
-                </svg>
-            </a>
-
-            <a href="https://soundcloud.com/whitekrestik" class="social-link" target="_blank" title="SoundCloud">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M1.175 12.225c-.051 0-.094.046-.101.1l-.233 2.154.233 2.105c.007.058.05.098.101.098.05 0 .09-.04.099-.098l.255-2.105-.27-2.154c-.009-.06-.052-.1-.084-.1zm-.899.828c-.06 0-.091.037-.104.094L0 14.479l.165 1.308c.014.057.045.094.09.094s.089-.037.099-.094l.19-1.308-.19-1.334c-.01-.057-.054-.094-.078-.094zm1.83-1.229c-.061 0-.12.045-.12.104l-.21 2.563.225 2.458c0 .06.045.104.106.104.061 0 .12-.044.12-.104l.24-2.458-.24-2.563c0-.06-.059-.104-.12-.104zm.945-.089c-.075 0-.135.06-.15.135l-.193 2.64.21 2.544c.016.077.075.138.149.138.075 0 .135-.061.15-.138l.24-2.544-.24-2.64c-.015-.075-.06-.135-.166-.135zm.961-.651c-.09 0-.149.074-.164.164l-.217 2.795.232 2.52c.015.09.074.164.164.164.075 0 .149-.074.164-.164l.249-2.52-.249-2.795c-.015-.09-.089-.164-.18-.164zm.96-.945c-.104 0-.179.09-.194.194l-.217 2.856.232 2.52c.015.104.09.194.194.194.09 0 .179-.09.179-.194l.249-2.52-.249-2.856c0-.104-.089-.194-.194-.194zm.96-.629c-.12 0-.209.104-.224.224l-.202 2.856.217 2.52c.015.12.104.224.224.224.12 0 .209-.104.224-.224l.249-2.52-.249-2.856c-.015-.12-.104-.224-.239-.224zm.99-.354c-.135 0-.239.12-.254.254l-.194 2.856.209 2.52c.015.135.119.254.254.254.119 0 .239-.119.254-.254l.249-2.52-.249-2.856c-.015-.134-.135-.254-.269-.254zm1.005-.104c-.149 0-.269.134-.284.284l-.179 2.96.194 2.52c.015.149.135.284.284.284.149 0 .269-.135.284-.284l.249-2.52-.249-2.96c-.015-.15-.135-.284-.299-.284zm1.02-.045c-.164 0-.299.149-.314.314l-.164 3.005.179 2.52c.015.164.15.314.314.314.164 0 .299-.15.314-.314l.249-2.52-.249-3.005c-.015-.165-.15-.314-.329-.314zm1.02-.015c-.179 0-.314.164-.329.344l-.149 3.02.164 2.52c.015.179.15.344.329.344.179 0 .314-.165.329-.344l.249-2.52-.249-3.02c-.015-.18-.15-.344-.344-.344zm1.035-.015c-.194 0-.344.179-.359.374l-.135 3.035.149 2.52c.015.194.165.374.359.374.194 0 .344-.18.359-.374l.249-2.52-.249-3.035c-.015-.195-.165-.374-.373-.374zm1.035-.015c-.209 0-.359.194-.374.404l-.119 3.05.134 2.52c.015.209.165.404.374.404.209 0 .359-.195.374-.404l.249-2.52-.249-3.05c-.015-.21-.165-.404-.389-.404zm1.035-.015c-.224 0-.389.209-.404.434l-.105 3.065.12 2.52c.015.224.18.434.404.434.224 0 .389-.21.404-.434l.249-2.52-.249-3.065c-.015-.225-.18-.434-.419-.434zm1.05-.015c-.239 0-.419.224-.434.464l-.09 3.08.105 2.52c.015.239.195.464.434.464.239 0 .419-.225.434-.464l.249-2.52-.249-3.08c-.015-.24-.195-.464-.449-.464zm1.05-.015c-.254 0-.449.239-.464.494l-.075 3.095.09 2.52c.015.254.21.494.464.494.254 0 .449-.24.464-.494l.249-2.52-.249-3.095c-.015-.255-.21-.494-.479-.494zm1.05 0c-.269 0-.479.254-.494.524l-.06 3.11.075 2.52c.015.269.225.524.494.524.269 0 .479-.255.494-.524l.249-2.52-.249-3.11c-.015-.27-.225-.524-.509-.524zm1.05.015c-.284 0-.509.269-.524.554l-.045 3.125.06 2.52c.015.284.24.554.524.554.284 0 .509-.27.524-.554l.249-2.52-.249-3.125c-.015-.285-.24-.554-.539-.554zm1.05.045c-.299 0-.539.284-.554.584l-.03 3.125.045 2.52c.015.299.255.584.554.584.299 0 .539-.285.554-.584l.249-2.52-.249-3.125c-.015-.3-.255-.584-.569-.584zm1.065.09c-.314 0-.569.299-.584.614l-.015 3.11.03 2.52c.015.314.27.614.584.614.314 0 .569-.3.584-.614l.249-2.52-.249-3.11c-.015-.315-.27-.614-.599-.614zm1.065.135c-.329 0-.599.314-.614.644l-.015 3.065.015 2.52c.015.329.285.644.614.644.329 0 .599-.315.614-.644l.249-2.52-.249-3.065c-.015-.33-.285-.644-.614-.644z"/>
-                </svg>
-            </a>
-        </div>
-
-        <button class="back-button" onclick="window.location.href='index.html'">← Назад</button>
+    <div class="aurora" aria-hidden="true">
+        <div class="blob b1"></div>
+        <div class="blob b2"></div>
+        <div class="blob b3"></div>
     </div>
+    <div class="grain" aria-hidden="true"></div>
+    <div class="scanlines" aria-hidden="true"></div>
+    <div class="vignette" aria-hidden="true"></div>
+
+    <main class="profile-card">
+        <div class="hero">
+            <img src="avatar.jpg" alt="@whitekrestik" class="hero-img">
+            <div class="hero-overlay" aria-hidden="true"></div>
+            <span class="corner tl" aria-hidden="true"></span>
+            <span class="corner tr" aria-hidden="true"></span>
+            <span class="corner bl" aria-hidden="true"></span>
+            <span class="corner br" aria-hidden="true"></span>
+            <span class="tape">nefor · mmxxvi</span>
+
+            <div class="hero-content">
+                <h1 class="username">@whitekrestik</h1>
+                <div class="meta-row">
+                    <span class="dot"></span>
+                    <span>online now</span>
+                    <span class="sep">·</span>
+                    <span>spb</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="body">
+            <div class="archive-id">id · 0001</div>
+
+            <p class="bio">
+                я <span class="tag">крутой гуль</span> <span class="tag">вайбкодер</span> <span class="tag">дотер</span>
+            </p>
+
+            <div class="stats">
+                <div class="stat-item">
+                    <div class="stat-number">∞</div>
+                    <div class="stat-label">вайб</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">24/7</div>
+                    <div class="stat-label">онлайн</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">100%</div>
+                    <div class="stat-label">стиль</div>
+                </div>
+            </div>
+
+            <div class="social-links">
+                <a href="https://t.me/whitekrestik" class="social-link" target="_blank" rel="noopener" data-label="telegram" aria-label="Telegram">
+                    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                        <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.161c-.18 1.897-.962 6.502-1.359 8.627-.168.9-.5 1.201-.82 1.23-.697.064-1.226-.461-1.901-.903-1.056-.692-1.653-1.123-2.678-1.799-1.185-.781-.417-1.21.258-1.911.177-.184 3.247-2.977 3.307-3.23.007-.032.015-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.139-5.062 3.345-.479.329-.913.489-1.302.481-.428-.009-1.252-.242-1.865-.442-.752-.244-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.831-2.529 6.998-3.015 3.333-1.386 4.025-1.627 4.477-1.635.099-.002.321.023.465.141.121.099.154.232.169.326.015.093.034.306.019.471z"/>
+                    </svg>
+                </a>
+                <a href="https://discord.gg/whitekrestik" class="social-link" target="_blank" rel="noopener" data-label="discord" aria-label="Discord">
+                    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                        <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/>
+                    </svg>
+                </a>
+                <a href="https://soundcloud.com/whitekrestik" class="social-link" target="_blank" rel="noopener" data-label="soundcloud" aria-label="SoundCloud">
+                    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                        <path d="M7 17.939h-1v-8.068c.308-.231.639-.429 1-.566v8.634zm3 0h1v-9.224c-.229-.265-.443-.54-.621-.845l-.379.001v10.068zm-2 0h1v-8.854c-.356-.014-.692-.016-1 .015v8.839zm-4 0h1v-7.646c-.36.34-.68.717-1 1.098v6.548zm-2-5.747c-.375.77-.594 1.627-.625 2.532.031.905.25 1.762.625 2.531v-5.063zm14 5.747h7.061c1.625-.111 2.939-1.438 2.939-3.088 0-1.712-1.412-3.1-3.158-3.1-.14 0-.276.011-.412.029-.547-2.774-2.987-4.88-5.93-4.88-.907 0-1.767.202-2.541.562-.233.107-.257.225-.257.361v10.004c0 .254.163.112.298.112z"/>
+                    </svg>
+                </a>
+                <a href="https://github.com/whitekrestik" class="social-link" target="_blank" rel="noopener" data-label="github" aria-label="GitHub">
+                    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                        <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.084-.729.084-.729 1.205.084 1.838 1.237 1.838 1.237 1.07 1.834 2.809 1.304 3.495.997.108-.776.417-1.305.76-1.605-2.665-.305-5.467-1.333-5.467-5.931 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/>
+                    </svg>
+                </a>
+            </div>
+
+            <div class="actions">
+                <button class="back-button" onclick="goBack()" type="button">
+                    <span class="arrow" aria-hidden="true">←</span>
+                    <span>назад</span>
+                </button>
+            </div>
+        </div>
+    </main>
 
     <script>
-        // Создание частиц
-        function createParticles() {
-            const container = document.getElementById('particles');
-            const particleCount = 40;
-
-            for (let i = 0; i < particleCount; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'particle';
-                particle.style.left = Math.random() * 100 + '%';
-                particle.style.animationDelay = Math.random() * 20 + 's';
-                particle.style.animationDuration = (15 + Math.random() * 10) + 's';
-                particle.style.width = (3 + Math.random() * 4) + 'px';
-                particle.style.height = particle.style.width;
-                container.appendChild(particle);
-            }
+        function goBack() {
+            document.body.style.transition = 'opacity .35s ease';
+            document.body.style.opacity = '0';
+            setTimeout(() => { window.location.href = 'index.html'; }, 340);
         }
-
-        // Инициализация
-        document.addEventListener('DOMContentLoaded', () => {
-            createParticles();
-        });
-
-        // Изменяем URL без перезагрузки
-        history.pushState({}, '', '/profile');
     </script>
 </body>
 </html>

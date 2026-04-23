@@ -3,300 +3,395 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Добро пожаловать</title>
+    <title>enter · @whitekrestik</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Unbounded:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg:        #050308;
+            --bg-card:   #0a0710;
+            --ink:       #f3f0f7;
+            --ink-muted: rgba(243, 240, 247, 0.58);
+            --ink-dim:   rgba(243, 240, 247, 0.35);
+            --blood:     #ef4444;
+            --blood-hi:  #f87171;
+            --blood-low: #7f1d1d;
+            --violet:    #8b5cf6;
+            --line:      rgba(255, 255, 255, 0.07);
         }
 
+        html, body { height: 100%; }
+
         body {
-            background: #000;
-            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background: var(--bg);
+            color: var(--ink);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            overflow: hidden;
+            padding: 24px;
             position: relative;
+            overflow: hidden;
+            -webkit-font-smoothing: antialiased;
         }
 
+        /* dark background atmosphere */
+        .aurora { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.5;
+            mix-blend-mode: screen;
+            will-change: transform;
+        }
+        .blob.b1 {
+            width: 520px; height: 520px;
+            background: radial-gradient(circle at 30% 30%, #7f1d1d, transparent 65%);
+            top: -140px; left: -120px;
+            animation: drift1 24s ease-in-out infinite alternate;
+        }
+        .blob.b2 {
+            width: 620px; height: 620px;
+            background: radial-gradient(circle at 60% 40%, #581c87, transparent 65%);
+            bottom: -180px; right: -160px;
+            animation: drift2 28s ease-in-out infinite alternate;
+        }
+        .blob.b3 {
+            width: 440px; height: 440px;
+            background: radial-gradient(circle at 50% 50%, #1e1b4b, transparent 60%);
+            top: 40%; left: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 0.4;
+            animation: drift3 36s ease-in-out infinite alternate;
+        }
+        @keyframes drift1 { to { transform: translate(80px, 60px) scale(1.1); } }
+        @keyframes drift2 { to { transform: translate(-60px, -40px) scale(1.05); } }
+        @keyframes drift3 { to { transform: translate(-55%, -45%) scale(1.15); } }
+
+        .grain {
+            position: fixed; inset: 0; z-index: 1; pointer-events: none; opacity: 0.12; mix-blend-mode: overlay;
+            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+            animation: grainShift 1.2s steps(6) infinite;
+        }
+        @keyframes grainShift {
+            0% { transform: translate(0,0); }
+            20% { transform: translate(-2%, 1%); }
+            40% { transform: translate(1%, -2%); }
+            60% { transform: translate(-1%, 2%); }
+            80% { transform: translate(2%, -1%); }
+            100% { transform: translate(0,0); }
+        }
+
+        .vignette {
+            position: fixed; inset: 0; z-index: 1; pointer-events: none;
+            background: radial-gradient(ellipse at center, transparent 35%, rgba(0,0,0,0.75) 100%);
+        }
+
+        .scanlines {
+            position: fixed; inset: 0; z-index: 1; pointer-events: none; opacity: 0.16;
+            background-image: repeating-linear-gradient(
+                to bottom,
+                transparent 0,
+                transparent 2px,
+                rgba(0,0,0,0.4) 2px,
+                rgba(0,0,0,0.4) 3px
+            );
+            mix-blend-mode: multiply;
+        }
+
+        /* HUD top bar */
+        .hud {
+            position: fixed;
+            top: 20px;
+            left: 24px;
+            right: 24px;
+            z-index: 4;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
+            color: var(--ink-dim);
+            pointer-events: none;
+            animation: rise 1.2s .4s cubic-bezier(.2,.8,.2,1) both;
+        }
+        .hud .left, .hud .right {
+            display: inline-flex;
+            gap: 14px;
+            align-items: center;
+        }
+        .hud .dot {
+            width: 6px; height: 6px; border-radius: 50%;
+            background: var(--blood);
+            box-shadow: 0 0 10px var(--blood);
+            animation: pulseDot 1.4s ease-in-out infinite;
+        }
+        @keyframes pulseDot { 0%,100% {opacity:1;transform:scale(1);} 50% {opacity:.4;transform:scale(.7);} }
+
+        /* container */
         .container {
             position: relative;
-            z-index: 1;
+            z-index: 3;
             text-align: center;
-            color: #fff;
-            padding: 60px;
-            background: rgba(255, 255, 255, 0.03);
+            padding: 60px 56px;
+            max-width: 640px;
+            width: 100%;
+            border-radius: 18px;
+            background: rgba(10,7,16,0.5);
+            border: 1px solid var(--line);
             backdrop-filter: blur(10px);
-            border-radius: 20px;
-            box-shadow: 0 0 100px rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            animation: fadeIn 1.5s ease;
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow:
+                0 40px 80px -20px rgba(0,0,0,0.7),
+                0 0 80px -20px rgba(239,68,68,0.18);
+            animation: rise 0.9s cubic-bezier(.2,.8,.2,1) both;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
+        .container::before {
+            content: '';
+            position: absolute;
+            inset: -1px;
+            border-radius: 18px;
+            padding: 1px;
+            background: linear-gradient(135deg, rgba(239,68,68,0.55), rgba(139,92,246,0.3) 50%, rgba(239,68,68,0.15));
+            -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+            -webkit-mask-composite: xor;
+                    mask-composite: exclude;
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        /* corner brackets */
+        .container .corner {
+            position: absolute;
+            width: 16px; height: 16px;
+            border: 1.5px solid rgba(239,68,68,0.85);
+            opacity: 0.85;
+        }
+        .container .corner.tl { top: 12px; left: 12px; border-right: 0; border-bottom: 0; }
+        .container .corner.tr { top: 12px; right: 12px; border-left: 0; border-bottom: 0; }
+        .container .corner.bl { bottom: 12px; left: 12px; border-right: 0; border-top: 0; }
+        .container .corner.br { bottom: 12px; right: 12px; border-left: 0; border-top: 0; }
+
+        @keyframes rise { from {opacity:0; transform:translateY(24px);} to {opacity:1; transform:translateY(0);} }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 6px 14px;
+            margin-bottom: 26px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--ink-muted);
+            background: rgba(239,68,68,0.08);
+            border: 1px solid rgba(239,68,68,0.35);
+            border-radius: 999px;
+        }
+        .eyebrow .dot {
+            width: 6px; height: 6px; border-radius: 50%;
+            background: var(--blood);
+            box-shadow: 0 0 10px var(--blood);
+            animation: pulseDot 1.4s ease-in-out infinite;
         }
 
         h1 {
-            font-size: 3em;
-            margin-bottom: 20px;
-            font-weight: 300;
-            letter-spacing: 8px;
-            text-transform: uppercase;
+            font-family: 'Unbounded', 'Space Grotesk', sans-serif;
+            font-size: clamp(2.4rem, 7vw, 4.6rem);
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            line-height: 0.98;
+            margin-bottom: 8px;
             color: #fff;
-            text-shadow: 0 0 10px #8b5cf6, 0 0 20px #8b5cf6, 0 0 30px #8b5cf6;
-            animation: neonPulse 2s ease-in-out infinite alternate;
+            text-transform: lowercase;
+            position: relative;
+            display: inline-block;
+            text-shadow:
+                2px 0 0 rgba(239,68,68,0.55),
+                -2px 0 0 rgba(139,92,246,0.4);
+            animation: glitch 4s steps(1) infinite;
         }
 
-        @keyframes neonPulse {
-            from {
-                text-shadow: 0 0 10px #8b5cf6, 0 0 20px #8b5cf6, 0 0 30px #8b5cf6;
+        @keyframes glitch {
+            0%, 92%, 100% {
+                text-shadow: 2px 0 0 rgba(239,68,68,0.55), -2px 0 0 rgba(139,92,246,0.4);
+                transform: translate(0);
             }
-            to {
-                text-shadow: 0 0 20px #a78bfa, 0 0 30px #a78bfa, 0 0 40px #a78bfa;
-            }
+            93% { text-shadow: 3px 0 0 rgba(239,68,68,0.9), -3px 0 0 rgba(139,92,246,0.7); transform: translate(-1px, 0); }
+            94% { text-shadow: -2px 0 0 rgba(239,68,68,0.7), 2px 0 0 rgba(34,211,238,0.5); transform: translate(1px, -1px); }
+            95% { text-shadow: 2px 0 0 rgba(239,68,68,0.55), -2px 0 0 rgba(139,92,246,0.4); transform: translate(0, 1px); }
+        }
+
+        .h1-sub {
+            display: block;
+            margin-top: 10px;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 500;
+            font-size: 0.75rem;
+            letter-spacing: 6px;
+            text-transform: uppercase;
+            color: var(--blood-hi);
+            opacity: 0.85;
         }
 
         .subtitle {
-            font-size: 1.2em;
-            margin-bottom: 50px;
-            opacity: 0.8;
+            font-size: 0.98rem;
+            margin: 28px auto 44px;
+            max-width: 440px;
+            color: var(--ink-muted);
             font-weight: 300;
-            letter-spacing: 3px;
-            color: #e0e0e0;
-            animation: fadeInUp 1s ease 0.3s forwards;
-            opacity: 0;
+            line-height: 1.7;
+            animation: rise 1.0s .15s cubic-bezier(.2,.8,.2,1) both;
         }
 
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 0.8;
-                transform: translateY(0);
-            }
-        }
-
+        /* enter button */
         .enter-button {
-            background: transparent;
-            color: #fff;
-            border: 2px solid #8b5cf6;
-            padding: 18px 50px;
-            font-size: 1.1em;
-            cursor: pointer;
-            transition: all 0.4s ease;
-            font-weight: 300;
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            gap: 14px;
+            padding: 16px 34px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.82rem;
+            font-weight: 500;
             letter-spacing: 4px;
             text-transform: uppercase;
-            position: relative;
+            color: #fff;
+            background: linear-gradient(180deg, rgba(239,68,68,0.16), rgba(127,29,29,0.08));
+            border: 1px solid rgba(239,68,68,0.5);
+            border-radius: 4px;
+            cursor: pointer;
             overflow: hidden;
-            box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
-            animation: fadeInUp 1s ease 0.6s forwards;
-            opacity: 0;
+            isolation: isolate;
+            transition: transform .2s ease, box-shadow .3s ease, border-color .3s ease, background .3s ease;
+            box-shadow: 0 10px 28px -12px rgba(239,68,68,0.5);
+            animation: rise 1.0s .3s cubic-bezier(.2,.8,.2,1) both;
         }
 
-        .enter-button::before {
+        .enter-button::after {
             content: '';
             position: absolute;
             top: 0;
-            left: -100%;
-            width: 100%;
+            left: -120%;
+            width: 55%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(139, 92, 246, 0.4), transparent);
-            transition: left 0.4s ease;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.28), transparent);
+            transform: skewX(-22deg);
+            transition: left .6s ease;
             z-index: -1;
         }
 
         .enter-button:hover {
-            color: #fff;
-            border-color: #a78bfa;
-            box-shadow: 0 0 30px rgba(139, 92, 246, 0.6), 0 0 60px rgba(139, 92, 246, 0.3);
-            transform: translateY(-3px);
+            transform: translateY(-2px);
+            border-color: var(--blood);
+            background: linear-gradient(180deg, rgba(239,68,68,0.28), rgba(127,29,29,0.14));
+            box-shadow:
+                0 18px 42px -12px rgba(239,68,68,0.8),
+                0 0 0 1px rgba(239,68,68,0.3);
         }
+        .enter-button:hover::after { left: 120%; }
+        .enter-button:active { transform: translateY(0) scale(0.98); }
 
-        .enter-button:hover::before {
-            left: 100%;
+        .enter-button .arrow {
+            display: inline-block;
+            transition: transform .2s ease;
+            color: var(--blood-hi);
         }
+        .enter-button:hover .arrow { transform: translateX(5px); }
 
-        .enter-button:active {
-            transform: scale(0.98);
-        }
-
-        /* Загрузочный экран */
-        .loading-screen {
+        /* footer hint */
+        .hint {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            flex-direction: column;
-            transition: opacity 0.8s ease;
-        }
-
-        .loading-screen.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        .loading-text {
-            font-size: 1.5em;
-            color: #fff;
-            margin-bottom: 40px;
-            letter-spacing: 8px;
+            bottom: 20px;
+            left: 0; right: 0;
+            text-align: center;
+            z-index: 3;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            letter-spacing: 4px;
             text-transform: uppercase;
-            font-weight: 300;
+            color: var(--ink-dim);
+            animation: rise 1.2s .6s cubic-bezier(.2,.8,.2,1) both;
         }
 
-        .loading-bar {
-            width: 200px;
-            height: 2px;
-            background: rgba(255, 255, 255, 0.1);
-            position: relative;
+        .hint .blood { color: var(--blood); }
+
+        @media (max-width: 560px) {
+            .container { padding: 52px 24px; border-radius: 14px; }
+            .enter-button { padding: 14px 26px; letter-spacing: 3px; }
+            .hud { font-size: 9px; letter-spacing: 1.5px; }
         }
 
-        .loading-progress {
-            height: 100%;
-            background: #fff;
-            animation: loadingProgress 2s ease forwards;
-            width: 0%;
-        }
-
-        @keyframes loadingProgress {
-            to { width: 100%; }
-        }
-
-        /* Декоративные элементы */
-        .decoration {
-            position: fixed;
-            width: 300px;
-            height: 300px;
-            border: 1px solid rgba(139, 92, 246, 0.1);
-            border-radius: 50%;
-            animation: rotate 20s linear infinite;
-            box-shadow: 0 0 50px rgba(139, 92, 246, 0.1);
-        }
-
-        .decoration:nth-child(1) {
-            top: -150px;
-            right: -150px;
-        }
-
-        .decoration:nth-child(2) {
-            bottom: -150px;
-            left: -150px;
-            animation-direction: reverse;
-            width: 400px;
-            height: 400px;
-        }
-
-        .decoration:nth-child(3) {
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 600px;
-            height: 600px;
-            border: 1px solid rgba(139, 92, 246, 0.05);
-            animation: rotate 30s linear infinite reverse;
-        }
-
-        @keyframes rotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        /* Частицы */
-        .particles {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        .particle {
-            position: absolute;
-            width: 4px;
-            height: 4px;
-            background: rgba(139, 92, 246, 0.6);
-            border-radius: 50%;
-            animation: float 15s infinite;
-        }
-
-        @keyframes float {
-            0%, 100% {
-                transform: translateY(100vh) rotate(0deg);
-                opacity: 0;
-            }
-            10% {
-                opacity: 1;
-            }
-            90% {
-                opacity: 1;
-            }
-            100% {
-                transform: translateY(-100vh) rotate(720deg);
-                opacity: 0;
-            }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation: none !important; transition: none !important; }
         }
     </style>
 </head>
 <body>
-    <div class="particles" id="particles"></div>
-    <div class="decoration"></div>
-    <div class="decoration"></div>
-    <div class="decoration"></div>
+    <div class="aurora" aria-hidden="true">
+        <div class="blob b1"></div>
+        <div class="blob b2"></div>
+        <div class="blob b3"></div>
+    </div>
+    <div class="grain" aria-hidden="true"></div>
+    <div class="scanlines" aria-hidden="true"></div>
+    <div class="vignette" aria-hidden="true"></div>
 
-    <div class="container">
-        <h1>Добро пожаловать</h1>
-        <p class="subtitle">начни путешествие</p>
-
-        <button class="enter-button" id="enterButton">
-            Войти
-        </button>
+    <div class="hud" aria-hidden="true">
+        <span class="left"><span class="dot"></span>rec · 00:00:00</span>
+        <span class="right">nefor // mmxxvi</span>
     </div>
 
+    <main class="container">
+        <span class="corner tl" aria-hidden="true"></span>
+        <span class="corner tr" aria-hidden="true"></span>
+        <span class="corner bl" aria-hidden="true"></span>
+        <span class="corner br" aria-hidden="true"></span>
+
+        <div class="eyebrow"><span class="dot"></span>online · @whitekrestik</div>
+        <h1>
+            welcome to the void
+            <span class="h1-sub">— добро пожаловать —</span>
+        </h1>
+        <p class="subtitle">Поздние ночи, грязные басы, готика и вайб. Заходи — внутри неспокойно, но красиво.</p>
+        <button class="enter-button" id="enterButton" type="button">
+            <span>войти</span>
+            <span class="arrow" aria-hidden="true">→</span>
+        </button>
+    </main>
+
+    <div class="hint">scroll · click · <span class="blood">don't look back</span></div>
+
     <script>
-        // Создание частиц
-        function createParticles() {
-            const container = document.getElementById('particles');
-            const particleCount = 50;
-
-            for (let i = 0; i < particleCount; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'particle';
-                particle.style.left = Math.random() * 100 + '%';
-                particle.style.animationDelay = Math.random() * 15 + 's';
-                particle.style.animationDuration = (10 + Math.random() * 10) + 's';
-                particle.style.width = (3 + Math.random() * 5) + 'px';
-                particle.style.height = particle.style.width;
-                container.appendChild(particle);
-            }
-        }
-
-        // Переход на профиль
-        document.getElementById('enterButton').addEventListener('click', function() {
-            window.location.href = 'profile.html';
+        document.getElementById('enterButton').addEventListener('click', () => {
+            document.body.style.transition = 'opacity .35s ease';
+            document.body.style.opacity = '0';
+            setTimeout(() => { window.location.href = 'profile.html'; }, 340);
         });
 
-        // Инициализация
-        document.addEventListener('DOMContentLoaded', () => {
-            createParticles();
-        });
+        // live timer in HUD
+        (function tickHud() {
+            const el = document.querySelector('.hud .left');
+            if (!el) return;
+            const start = Date.now();
+            setInterval(() => {
+                const s = Math.floor((Date.now() - start) / 1000);
+                const h = String(Math.floor(s / 3600)).padStart(2, '0');
+                const m = String(Math.floor((s % 3600) / 60)).padStart(2, '0');
+                const sec = String(s % 60).padStart(2, '0');
+                el.innerHTML = '<span class="dot"></span>rec · ' + h + ':' + m + ':' + sec;
+            }, 1000);
+        })();
 
-        // Изменяем URL без перезагрузки
         history.pushState({}, '', '/');
     </script>
 </body>
