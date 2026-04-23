@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Регистрация · @whitekrestik</title>
+    <link rel="icon" type="image/jpeg" href="https://raw.githubusercontent.com/dmitriydolgix14-crypto/site/main/icon.jpg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Unbounded:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg:        #050308;
+            --bg-card:   rgba(14, 10, 22, 0.72);
+            --bg-input:  rgba(255, 255, 255, 0.04);
+            --ink:       #f3f0f7;
+            --ink-muted: rgba(243, 240, 247, 0.62);
+            --ink-dim:   rgba(243, 240, 247, 0.38);
+            --blood:     #ef4444;
+            --blood-hi:  #f87171;
+            --blood-low: #7f1d1d;
+            --violet:    #8b5cf6;
+            --violet-hi: #a78bfa;
+            --success:   #4ade80;
+            --warn:      #fbbf24;
+            --line:      rgba(255, 255, 255, 0.08);
+            --line-hi:   rgba(255, 255, 255, 0.16);
+        }
+
+        html, body { height: 100%; }
+
+        body {
+            background: var(--bg);
+            color: var(--ink);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            position: relative;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .aurora { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.5;
+            mix-blend-mode: screen;
+            will-change: transform;
+        }
+        .blob.b1 {
+            width: 520px; height: 520px;
+            background: radial-gradient(circle at 30% 30%, #7f1d1d, transparent 65%);
+            top: -140px; left: -120px;
+            animation: drift1 24s ease-in-out infinite alternate;
+        }
+        .blob.b2 {
+            width: 620px; height: 620px;
+            background: radial-gradient(circle at 60% 40%, #581c87, transparent 65%);
+            bottom: -180px; right: -160px;
+            animation: drift2 28s ease-in-out infinite alternate;
+        }
+        .blob.b3 {
+            width: 440px; height: 440px;
+            background: radial-gradient(circle at 50% 50%, #1e1b4b, transparent 60%);
+            top: 40%; left: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 0.4;
+            animation: drift3 36s ease-in-out infinite alternate;
+        }
+        @keyframes drift1 { to { transform: translate(80px, 60px) scale(1.1); } }
+        @keyframes drift2 { to { transform: translate(-60px, -40px) scale(1.05); } }
+        @keyframes drift3 { to { transform: translate(-55%, -45%) scale(1.15); } }
+
+        .grain {
+            position: fixed; inset: 0; z-index: 1; pointer-events: none; opacity: 0.1; mix-blend-mode: overlay;
+            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+            animation: grainShift 1.2s steps(6) infinite;
+        }
+        @keyframes grainShift {
+            0% { transform: translate(0,0); }
+            20% { transform: translate(-2%, 1%); }
+            40% { transform: translate(1%, -2%); }
+            60% { transform: translate(-1%, 2%); }
+            80% { transform: translate(2%, -1%); }
+            100% { transform: translate(0,0); }
+        }
+        .vignette {
+            position: fixed; inset: 0; z-index: 1; pointer-events: none;
+            background: radial-gradient(ellipse at center, transparent 35%, rgba(0,0,0,0.75) 100%);
+        }
+        .scanlines {
+            position: fixed; inset: 0; z-index: 1; pointer-events: none; opacity: 0.14;
+            background-image: repeating-linear-gradient(to bottom, transparent 0, transparent 2px, rgba(0,0,0,0.4) 2px, rgba(0,0,0,0.4) 3px);
+        }
+
+        .back-home {
+            position: fixed;
+            top: 24px; left: 24px;
+            z-index: 20;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px;
+            background: rgba(14, 10, 22, 0.6);
+            border: 1px solid var(--line);
+            border-radius: 999px;
+            color: var(--ink-muted);
+            text-decoration: none;
+            font-size: 0.85em;
+            font-weight: 500;
+            backdrop-filter: blur(10px);
+            transition: all 0.25s ease;
+        }
+        .back-home:hover {
+            color: var(--ink);
+            border-color: var(--line-hi);
+            background: rgba(14, 10, 22, 0.85);
+            transform: translateX(-2px);
+        }
+        .back-home svg { width: 14px; height: 14px; }
+
+        .auth-card {
+            position: relative;
+            z-index: 10;
+            background: var(--bg-card);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border-radius: 24px;
+            padding: 40px 38px;
+            max-width: 460px;
+            width: 100%;
+            border: 1px solid var(--line);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5), 0 0 80px rgba(139, 92, 246, 0.08);
+            animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .auth-logo {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 18px;
+        }
+        .auth-logo img {
+            width: 56px; height: 56px;
+            border-radius: 50%;
+            border: 2px solid var(--line-hi);
+            box-shadow: 0 10px 30px rgba(139, 92, 246, 0.25);
+            object-fit: cover;
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: 26px;
+        }
+        .auth-title {
+            font-family: 'Unbounded', sans-serif;
+            font-size: 1.8em;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--blood-hi), var(--violet-hi));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+            letter-spacing: -0.02em;
+        }
+        .auth-subtitle {
+            color: var(--ink-muted);
+            font-size: 0.88em;
+        }
+
+        .form-group {
+            position: relative;
+            margin-bottom: 14px;
+        }
+        .form-label {
+            display: block;
+            margin-bottom: 6px;
+            color: var(--ink-muted);
+            font-size: 0.8em;
+            font-weight: 500;
+            letter-spacing: 0.02em;
+        }
+        .input-wrapper { position: relative; }
+        .input-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 18px;
+            height: 18px;
+            color: var(--ink-dim);
+            pointer-events: none;
+            transition: color 0.25s ease;
+        }
+        .form-input {
+            width: 100%;
+            padding: 13px 16px 13px 46px;
+            background: var(--bg-input);
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            color: var(--ink);
+            font-size: 0.94em;
+            font-family: inherit;
+            transition: all 0.25s ease;
+        }
+        .form-input::placeholder { color: var(--ink-dim); }
+        .form-input:hover { border-color: var(--line-hi); }
+        .form-input:focus {
+            outline: none;
+            border-color: var(--violet);
+            background: rgba(255, 255, 255, 0.06);
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.14);
+        }
+        .form-input:focus ~ .input-icon { color: var(--violet-hi); }
+        .form-input.has-error {
+            border-color: var(--blood);
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12);
+        }
+        .form-input.is-valid {
+            border-color: rgba(74, 222, 128, 0.5);
+        }
+        .field-hint {
+            display: block;
+            margin-top: 5px;
+            font-size: 0.75em;
+            color: var(--ink-dim);
+            min-height: 14px;
+        }
+        .field-hint.error { color: var(--blood-hi); }
+
+        .pw-toggle {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 32px; height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            border: none;
+            color: var(--ink-dim);
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+        .pw-toggle:hover {
+            color: var(--ink);
+            background: rgba(255, 255, 255, 0.06);
+        }
+        .pw-toggle svg { width: 18px; height: 18px; }
+        .pw-toggle .icon-eye-off { display: none; }
+        .pw-toggle.visible .icon-eye { display: none; }
+        .pw-toggle.visible .icon-eye-off { display: block; }
+        .form-input.pw-input { padding-right: 50px; }
+
+        /* password strength meter */
+        .pw-strength {
+            display: flex;
+            gap: 4px;
+            margin-top: 8px;
+        }
+        .pw-strength-bar {
+            flex: 1;
+            height: 3px;
+            background: var(--line);
+            border-radius: 2px;
+            transition: background 0.3s ease;
+        }
+        .pw-strength-bar.active-weak { background: var(--blood); }
+        .pw-strength-bar.active-medium { background: var(--warn); }
+        .pw-strength-bar.active-strong { background: var(--success); }
+        .pw-strength-label {
+            margin-top: 6px;
+            font-size: 0.72em;
+            color: var(--ink-dim);
+            transition: color 0.3s ease;
+        }
+        .pw-strength-label.weak { color: var(--blood-hi); }
+        .pw-strength-label.medium { color: var(--warn); }
+        .pw-strength-label.strong { color: var(--success); }
+
+        .btn {
+            position: relative;
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--blood) 0%, #b91c1c 100%);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 0.95em;
+            font-weight: 600;
+            font-family: inherit;
+            letter-spacing: 0.02em;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, var(--violet) 0%, var(--blood) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .btn span { position: relative; z-index: 1; }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(239, 68, 68, 0.35);
+        }
+        .btn:hover::before { opacity: 1; }
+        .btn:active { transform: translateY(0); }
+        .btn:disabled {
+            opacity: 0.55;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        .btn:disabled::before { opacity: 0; }
+        .spinner {
+            position: relative;
+            z-index: 1;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            display: none;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .btn.loading .spinner { display: block; }
+
+        .auth-footer {
+            text-align: center;
+            margin-top: 22px;
+            color: var(--ink-muted);
+            font-size: 0.88em;
+        }
+        .auth-link {
+            color: var(--violet-hi);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.25s ease;
+        }
+        .auth-link:hover { color: var(--blood-hi); }
+
+        .msg {
+            border-radius: 10px;
+            padding: 12px 14px;
+            margin-bottom: 16px;
+            font-size: 0.86em;
+            display: none;
+            align-items: flex-start;
+            gap: 10px;
+            animation: slideIn 0.3s ease;
+        }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+        .msg.show { display: flex; }
+        .msg svg { width: 18px; height: 18px; flex-shrink: 0; margin-top: 1px; }
+        .msg-error {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: var(--blood-hi);
+        }
+        .msg-success {
+            background: rgba(74, 222, 128, 0.1);
+            border: 1px solid rgba(74, 222, 128, 0.3);
+            color: var(--success);
+        }
+
+        @media (max-width: 480px) {
+            .auth-card { padding: 28px 22px; border-radius: 20px; }
+            .auth-title { font-size: 1.55em; }
+            .auth-logo img { width: 52px; height: 52px; }
+            .back-home { top: 16px; left: 16px; padding: 8px 12px; font-size: 0.8em; }
+        }
+    </style>
+</head>
+<body>
+    <div class="aurora">
+        <div class="blob b1"></div>
+        <div class="blob b2"></div>
+        <div class="blob b3"></div>
+    </div>
+    <div class="grain" aria-hidden="true"></div>
+    <div class="scanlines" aria-hidden="true"></div>
+    <div class="vignette" aria-hidden="true"></div>
+
+    <a href="/" class="back-home" aria-label="На главную">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+        На главную
+    </a>
+
+    <div class="auth-card">
+        <div class="auth-logo">
+            <img src="https://raw.githubusercontent.com/dmitriydolgix14-crypto/site/main/icon.jpg" alt="logo">
+        </div>
+
+        <div class="auth-header">
+            <h1 class="auth-title">Создать аккаунт</h1>
+            <p class="auth-subtitle">Присоединяйся к @whitekrestik</p>
+        </div>
+
+        <div class="msg msg-error" id="errorMessage">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+            <span id="errorText"></span>
+        </div>
+
+        <div class="msg msg-success" id="successMessage">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
+            <span id="successText"></span>
+        </div>
+
+        <form id="registerForm" novalidate>
+            <div class="form-group">
+                <label class="form-label" for="username">Имя пользователя</label>
+                <div class="input-wrapper">
+                    <input type="text" class="form-input" id="username" name="username" autocomplete="username" placeholder="whitekrestik" required minlength="3" maxlength="20" pattern="^[a-zA-Z0-9_]+$">
+                    <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                </div>
+                <span class="field-hint" id="usernameHint">3–20 символов, латиница, цифры и _</span>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="displayName">Отображаемое имя</label>
+                <div class="input-wrapper">
+                    <input type="text" class="form-input" id="displayName" name="displayName" autocomplete="nickname" placeholder="Как тебя называть?" required maxlength="50">
+                    <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 20h9"></path>
+                        <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                    </svg>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="email">Email</label>
+                <div class="input-wrapper">
+                    <input type="email" class="form-input" id="email" name="email" autocomplete="email" placeholder="example@mail.com" required>
+                    <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                        <polyline points="22,6 12,13 2,6"></polyline>
+                    </svg>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="password">Пароль</label>
+                <div class="input-wrapper">
+                    <input type="password" class="form-input pw-input" id="password" name="password" autocomplete="new-password" placeholder="Минимум 6 символов" required minlength="6">
+                    <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                    <button type="button" class="pw-toggle" id="pwToggle" aria-label="Показать пароль">
+                        <svg class="icon-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                        <svg class="icon-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                            <line x1="1" y1="1" x2="23" y2="23"></line>
+                        </svg>
+                    </button>
+                </div>
+                <div class="pw-strength" id="pwStrength" aria-hidden="true">
+                    <div class="pw-strength-bar"></div>
+                    <div class="pw-strength-bar"></div>
+                    <div class="pw-strength-bar"></div>
+                    <div class="pw-strength-bar"></div>
+                </div>
+                <span class="pw-strength-label" id="pwStrengthLabel">Сила пароля</span>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="passwordConfirm">Повторите пароль</label>
+                <div class="input-wrapper">
+                    <input type="password" class="form-input pw-input" id="passwordConfirm" name="passwordConfirm" autocomplete="new-password" placeholder="Ещё раз для надёжности" required minlength="6">
+                    <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 12l2 2 4-4"></path>
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                </div>
+                <span class="field-hint" id="confirmHint"></span>
+            </div>
+
+            <button type="submit" class="btn" id="submitBtn">
+                <div class="spinner" aria-hidden="true"></div>
+                <span>Зарегистрироваться</span>
+            </button>
+        </form>
+
+        <div class="auth-footer">
+            Уже есть аккаунт? <a href="/login" class="auth-link">Войти</a>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('registerForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const submitText = submitBtn.querySelector('span');
+        const errorMessage = document.getElementById('errorMessage');
+        const errorText = document.getElementById('errorText');
+        const successMessage = document.getElementById('successMessage');
+        const successText = document.getElementById('successText');
+        const usernameInput = document.getElementById('username');
+        const usernameHint = document.getElementById('usernameHint');
+        const displayNameInput = document.getElementById('displayName');
+        const emailInput = document.getElementById('email');
+        const pwInput = document.getElementById('password');
+        const pwConfirmInput = document.getElementById('passwordConfirm');
+        const confirmHint = document.getElementById('confirmHint');
+        const pwToggle = document.getElementById('pwToggle');
+        const strengthBars = document.querySelectorAll('.pw-strength-bar');
+        const strengthLabel = document.getElementById('pwStrengthLabel');
+
+        // If already logged in, skip to profile
+        if (localStorage.getItem('token') || sessionStorage.getItem('token')) {
+            window.location.href = '/profile';
+        }
+
+        pwToggle.addEventListener('click', () => {
+            const visible = pwInput.type === 'text';
+            pwInput.type = visible ? 'password' : 'text';
+            pwConfirmInput.type = visible ? 'password' : 'text';
+            pwToggle.classList.toggle('visible', !visible);
+            pwToggle.setAttribute('aria-label', visible ? 'Показать пароль' : 'Скрыть пароль');
+        });
+
+        function showError(msg) {
+            errorText.textContent = msg;
+            errorMessage.classList.add('show');
+            successMessage.classList.remove('show');
+        }
+        function showSuccess(msg) {
+            successText.textContent = msg;
+            successMessage.classList.add('show');
+            errorMessage.classList.remove('show');
+        }
+        function clearMessages() {
+            errorMessage.classList.remove('show');
+            successMessage.classList.remove('show');
+        }
+
+        // Username live validation
+        usernameInput.addEventListener('input', () => {
+            const v = usernameInput.value;
+            usernameInput.classList.remove('has-error', 'is-valid');
+            usernameHint.classList.remove('error');
+            usernameHint.textContent = '3–20 символов, латиница, цифры и _';
+            if (v.length === 0) return;
+            if (!/^[a-zA-Z0-9_]+$/.test(v)) {
+                usernameInput.classList.add('has-error');
+                usernameHint.classList.add('error');
+                usernameHint.textContent = 'Только латиница, цифры и _';
+            } else if (v.length < 3) {
+                usernameHint.textContent = `Ещё ${3 - v.length} симв.`;
+            } else {
+                usernameInput.classList.add('is-valid');
+                usernameHint.textContent = '✓ Доступно';
+            }
+        });
+
+        // Password strength
+        function calcStrength(pw) {
+            if (!pw) return 0;
+            let score = 0;
+            if (pw.length >= 6) score++;
+            if (pw.length >= 10) score++;
+            if (/[A-Z]/.test(pw) && /[a-z]/.test(pw)) score++;
+            if (/\d/.test(pw) && /[^A-Za-z0-9]/.test(pw)) score++;
+            return Math.min(score, 4);
+        }
+
+        pwInput.addEventListener('input', () => {
+            const score = calcStrength(pwInput.value);
+            strengthBars.forEach((bar, i) => {
+                bar.classList.remove('active-weak', 'active-medium', 'active-strong');
+                if (i < score) {
+                    const cls = score <= 1 ? 'active-weak' : score <= 3 ? 'active-medium' : 'active-strong';
+                    bar.classList.add(cls);
+                }
+            });
+            strengthLabel.classList.remove('weak', 'medium', 'strong');
+            if (!pwInput.value) {
+                strengthLabel.textContent = 'Сила пароля';
+            } else if (score <= 1) {
+                strengthLabel.textContent = 'Слабый пароль';
+                strengthLabel.classList.add('weak');
+            } else if (score <= 3) {
+                strengthLabel.textContent = 'Средний пароль';
+                strengthLabel.classList.add('medium');
+            } else {
+                strengthLabel.textContent = 'Надёжный пароль';
+                strengthLabel.classList.add('strong');
+            }
+            // Re-check confirm match
+            if (pwConfirmInput.value) pwConfirmInput.dispatchEvent(new Event('input'));
+            pwInput.classList.remove('has-error');
+            clearMessages();
+        });
+
+        pwConfirmInput.addEventListener('input', () => {
+            pwConfirmInput.classList.remove('has-error', 'is-valid');
+            confirmHint.classList.remove('error');
+            confirmHint.textContent = '';
+            if (!pwConfirmInput.value) return;
+            if (pwConfirmInput.value !== pwInput.value) {
+                pwConfirmInput.classList.add('has-error');
+                confirmHint.classList.add('error');
+                confirmHint.textContent = 'Пароли не совпадают';
+            } else {
+                pwConfirmInput.classList.add('is-valid');
+                confirmHint.textContent = '✓ Совпадают';
+            }
+            clearMessages();
+        });
+
+        [emailInput, displayNameInput].forEach(input => {
+            input.addEventListener('input', () => {
+                input.classList.remove('has-error');
+                clearMessages();
+            });
+        });
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            clearMessages();
+
+            const username = usernameInput.value.trim();
+            const displayName = displayNameInput.value.trim();
+            const email = emailInput.value.trim();
+            const password = pwInput.value;
+            const passwordConfirm = pwConfirmInput.value;
+
+            let valid = true;
+            if (!/^[a-zA-Z0-9_]{3,20}$/.test(username)) {
+                usernameInput.classList.add('has-error');
+                valid = false;
+            }
+            if (!displayName) { displayNameInput.classList.add('has-error'); valid = false; }
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                emailInput.classList.add('has-error');
+                valid = false;
+            }
+            if (password.length < 6) { pwInput.classList.add('has-error'); valid = false; }
+            if (password !== passwordConfirm) { pwConfirmInput.classList.add('has-error'); valid = false; }
+            if (!valid) {
+                showError('Проверь, что все поля заполнены правильно');
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.classList.add('loading');
+            submitText.textContent = 'Создаём...';
+
+            try {
+                const response = await fetch('/api/auth?action=register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, email, displayName, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.token) {
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+
+                    showSuccess('Аккаунт создан! Перенаправление...');
+                    setTimeout(() => { window.location.href = '/profile'; }, 900);
+                } else {
+                    showError(data.error || 'Ошибка регистрации');
+                }
+            } catch (error) {
+                showError('Ошибка соединения с сервером');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.classList.remove('loading');
+                submitText.textContent = 'Зарегистрироваться';
+            }
+        });
+    </script>
+</body>
+</html>

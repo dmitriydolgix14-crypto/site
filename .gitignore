@@ -12,3 +12,8 @@ Thumbs.db
 node_modules/
 dist/
 build/
+.vercel
+
+# Ignore env files
+.env
+.env.local
